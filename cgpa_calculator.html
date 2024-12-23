@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CGPA Calculator</title>
-    <link rel="stylesheet" href="styles2.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <h1>CGPA Calculator</h1>
         <form id="cgpa-form">
-            <label for="sgpa1">SGPA in 1st semester:</label>
-            <input type="number" id="sgpa1" name="sgpa1" step="0.01" min="1.0" max="10.0" required><br><br>
-
-            <label for="sgpa2">SGPA in 2nd semester:</label>
-            <input type="number" id="sgpa2" name="sgpa2" step="0.01" min="1.0" max="10.0" required><br><br>
-
+            <div id="semesters-container">
+                <div class="semester-row">
+                    <input type="number" name="sgpa1" placeholder="SGPA in 1st semester" min="1.0" max="10.0" step="0.01" required>
+                </div>
+            </div>
+            <button type="button" id="add-semester">Add Semester</button><br><br>
             <button type="submit">Calculate CGPA</button>
         </form>
     </div>
@@ -25,19 +25,35 @@
     </footer>
 
     <script>
+        document.getElementById('add-semester').addEventListener('click', function() {
+            const container = document.getElementById('semesters-container');
+            const semesterCount = container.getElementsByClassName('semester-row').length + 1;
+            const newRow = document.createElement('div');
+            newRow.className = 'semester-row';
+            newRow.innerHTML = `
+                <input type="number" name="sgpa${semesterCount}" placeholder="SGPA in ${semesterCount} semester" min="1.0" max="10.0" step="0.01" required>
+            `;
+            container.appendChild(newRow);
+        });
+
         document.getElementById('cgpa-form').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent form submission
 
-            const sgpa1 = parseFloat(document.getElementById('sgpa1').value);
-            const sgpa2 = parseFloat(document.getElementById('sgpa2').value);
+            const semesterRows = document.getElementsByClassName('semester-row');
+            let totalSGPA = 0;
+            let count = 0;
 
-            if (sgpa1 < 1.0 || sgpa1 > 10.0 || sgpa2 < 1.0 || sgpa2 > 10.0) {
-                alert('Please enter SGPA values between 1.0 and 10.0.');
-                return;
+            for (let row of semesterRows) {
+                const sgpa = parseFloat(row.querySelector('input').value);
+                if (sgpa < 1.0 || sgpa > 10.0) {
+                    alert('Please enter SGPA values between 1.0 and 10.0.');
+                    return;
+                }
+                totalSGPA += sgpa;
+                count++;
             }
 
-            const cgpa = (sgpa1 + sgpa2) / 2;
-
+            const cgpa = totalSGPA / count;
             alert('Your CGPA is ' + cgpa.toFixed(2) + '.');
         });
     </script>
