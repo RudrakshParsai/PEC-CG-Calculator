@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grades Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Grades Calculator</h1>
+    <form id="grades-form">
+        <label for="your-marks">Enter your marks:</label>
+        <input type="number" id="your-marks" name="your-marks" step="0.01" required><br><br>
+
+        <label for="total-marks">Enter total marks:</label>
+        <input type="number" id="total-marks" name="total-marks" step="0.01" required><br><br>
+
+        <label for="class-average">Class average:</label>
+        <input type="number" id="class-average" name="class-average" step="0.01" required><br><br>
+
+        <label for="median-deviation">Median deviation:</label>
+        <input type="number" id="median-deviation" name="median-deviation" step="0.01" required><br><br>
+
+        <button type="submit">Calculate</button>
+    </form>
+
+    <script>
+        document.getElementById('grades-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const Mks = parseFloat(document.getElementById('your-marks').value);
+            const S = parseFloat(document.getElementById('total-marks').value);
+            const X = parseFloat(document.getElementById('class-average').value);
+            const D = parseFloat(document.getElementById('median-deviation').value);
+
+            let grade;
+
+            if (Mks >= X + 1.5 * D) {
+                grade = "A+";
+            } else if (Mks >= X + D) {
+                grade = "A";
+            } else if (Mks >= X + 0.5 * D) {
+                grade = "B+";
+            } else if (Mks >= X) {
+                grade = "B";
+            } else if (Mks >= X - 0.5 * D) {
+                grade = "C+";
+            } else if (Mks >= X - D) {
+                grade = "C";
+            } else if (Mks >= X - 1.5 * D) {
+                grade = "D";
+            } else {
+                grade = "F";
+            }
+
+            alert('Your grade is: ' + grade);
+        });
+    </script>
+</body>
+</html>
