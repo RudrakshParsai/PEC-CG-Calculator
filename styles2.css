@@ -7,11 +7,11 @@ body {
     background-color: #f0f0f0;
     color: #333;
     line-height: 1.6;
+    text-align: center;
 }
 
 .container {
     flex: 1;
-    text-align: center;
     margin-top: 50px;
 }
 
