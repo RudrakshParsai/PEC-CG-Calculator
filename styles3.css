@@ -1,0 +1,144 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+    color: #333;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.container {
+    flex: 1;
+    margin-top: 50px;
+    padding: 0 20px;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 2.5em;
+}
+
+form {
+    display: inline-block;
+    text-align: left;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+}
+
+.subject-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.subject-row input[type="text"],
+.subject-row select,
+.subject-row input[type="number"] {
+    width: 28%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.subject-row .remove-subject {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    width: 100%;
+}
+
+.subject-row .remove-subject:hover {
+    background-color: #ff1a1a;
+    transform: translateY(-2px);
+}
+
+.subject-row .remove-subject:active {
+    background-color: #e60000;
+    transform: translateY(0);
+}
+
+button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+button:last-of-type {
+    margin-bottom: 0;
+}
+
+button:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+}
+
+button:active {
+    background-color: #3e8e41;
+    transform: translateY(0);
+}
+
+footer {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 8px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+    .container {
+        margin-top: 20px;
+        padding: 0 10px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    form {
+        padding: 20px;
+    }
+
+    .subject-row {
+        flex-direction: column;
+    }
+
+    .subject-row input[type="text"],
+    .subject-row select,
+    .subject-row input[type="number"],
+    .subject-row .remove-subject {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    button {
+        padding: 10px;
+    }
+}
