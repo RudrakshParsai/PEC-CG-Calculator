@@ -4,25 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grades Calculator</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles1.css">
 </head>
 <body>
-    <h1>Grades Calculator</h1>
-    <form id="grades-form">
-        <label for="your-marks">Enter your marks:</label>
-        <input type="number" id="your-marks" name="your-marks" step="0.01" required><br><br>
+    <div class="container">
+        <h1>Grades Calculator</h1>
+        <form id="grades-form">
+            <label for="your-marks">Enter your marks:</label>
+            <input type="number" id="your-marks" name="your-marks" step="0.01" required><br><br>
 
-        <label for="total-marks">Enter total marks:</label>
-        <input type="number" id="total-marks" name="total-marks" step="0.01" required><br><br>
+            <label for="total-marks">Enter total marks:</label>
+            <input type="number" id="total-marks" name="total-marks" step="0.01" required><br><br>
 
-        <label for="class-average">Class average:</label>
-        <input type="number" id="class-average" name="class-average" step="0.01" required><br><br>
+            <label for="class-average">Class average:</label>
+            <input type="number" id="class-average" name="class-average" step="0.01" required><br><br>
 
-        <label for="median-deviation">Median deviation:</label>
-        <input type="number" id="median-deviation" name="median-deviation" step="0.01" required><br><br>
+            <label for="median-deviation">Median deviation:</label>
+            <input type="number" id="median-deviation" name="median-deviation" step="0.01" required><br><br>
 
-        <button type="submit">Calculate</button>
-    </form>
+            <button type="submit">Calculate</button>
+        </form>
+    </div>
+
+    <footer>
+        <p>Made with ❤️ by Rudraksh Parsai.</p>
+    </footer>
 
     <script>
         document.getElementById('grades-form').addEventListener('submit', function(event) {
