@@ -1,66 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grades Calculator</title>
-    <link rel="stylesheet" href="styles1.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grades Calculator</title>
+  <link rel="stylesheet" href="styles1.css" />
 </head>
 <body>
-    <div class="container">
-        <h1>Grades Calculator</h1>
-        <form id="grades-form">
-            <label for="your-marks">Enter your marks:</label>
-            <input type="number" id="your-marks" name="your-marks" step="0.01" required><br><br>
+  <div class="container">
+    <h1>Grades Calculator</h1>
+    <form id="grades-form">
+      <div class="toggle-row">
+        <label class="switch">
+          <input type="checkbox" id="personal-grade" checked aria-label="Toggle personal grade calculation">
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label" id="toggle-label-text">Calculate my grade</span>
+      </div>
+      <div id="your-marks-group">
+        <label for="your-marks">Enter your marks:</label>
+        <input type="number" id="your-marks" name="your-marks" step="0.01" required aria-required="true" />
+      </div>
 
-            <label for="total-marks">Enter total marks:</label>
-            <input type="number" id="total-marks" name="total-marks" step="0.01" required><br><br>
+      <label for="total-marks">Enter total marks:</label>
+      <input type="number" id="total-marks" name="total-marks" step="0.01" required aria-required="true" />
 
-            <label for="class-average">Class average:</label>
-            <input type="number" id="class-average" name="class-average" step="0.01" required><br><br>
+      <label for="class-average">Class average:</label>
+      <input type="number" id="class-average" name="class-average" step="0.01" required aria-required="true" />
 
-            <label for="median-deviation">Median deviation:</label>
-            <input type="number" id="median-deviation" name="median-deviation" step="0.01" required><br><br>
+      <label for="median-deviation">Median deviation:</label>
+      <input type="number" id="median-deviation" name="median-deviation" step="0.01" required aria-required="true" />
 
-            <button type="submit">Calculate</button>
-        </form>
+      <button type="submit">Calculate</button>
+    </form>
+
+    <div id="result-container">
+      <p id="result"></p>
+      <img id="easter-egg" src="easteregg.jpeg" alt="Easter egg image for failing grade" style="display:none; max-width:200px; margin:10px auto; border-radius:8px;" />
+      <canvas id="bell-curve" style="display:none;margin:20px auto 0;max-width:100%;" aria-label="Bell curve showing grade distribution"></canvas>
+      <div id="grade-table" style="display:none"></div>
     </div>
+  </div>
 
-    <footer>
-        <p>Made with ❤️ by Rudraksh Parsai.</p>
-    </footer>
+  <footer>
+    <p>Made with ❤️ by Rudraksh Parsai.</p>
+  </footer>
 
-    <script>
-        document.getElementById('grades-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent form submission
+  <script>
+    function getGradeBoundaries(X, D, S) {
+      const bounds = [
+        { grade: "A+", min: X + 1.5 * D, max: S },
+        { grade: "A",  min: X + D,       max: X + 1.5 * D },
+        { grade: "B+", min: X + 0.5 * D, max: X + D },
+        { grade: "B",  min: X,           max: X + 0.5 * D },
+        { grade: "C+", min: X - 0.5 * D, max: X },
+        { grade: "C",  min: X - D,       max: X - 0.5 * D },
+        { grade: "D",  min: X - 1.5 * D, max: X - D },
+        { grade: "F",  min: 0,           max: X - 1.5 * D }
+      ];
+      bounds.forEach(b => {
+        b.min = Math.max(0, b.min);
+        b.max = Math.min(S, b.max);
+      });
+      return bounds;
+    }
 
-            const Mks = parseFloat(document.getElementById('your-marks').value);
-            const S = parseFloat(document.getElementById('total-marks').value);
-            const X = parseFloat(document.getElementById('class-average').value);
-            const D = parseFloat(document.getElementById('median-deviation').value);
+    function drawBellCurve(canvas, average, deviation, total, gradeBoundaries) {
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            let grade;
+      const plotWidth = canvas.width - 80;
+      const plotHeight = canvas.height - 80;
 
-            if (Mks >= X + 1.5 * D) {
-                grade = "A+";
-            } else if (Mks >= X + D) {
-                grade = "A";
-            } else if (Mks >= X + 0.5 * D) {
-                grade = "B+";
-            } else if (Mks >= X) {
-                grade = "B";
-            } else if (Mks >= X - 0.5 * D) {
-                grade = "C+";
-            } else if (Mks >= X - D) {
-                grade = "C";
-            } else if (Mks >= X - 1.5 * D) {
-                grade = "D";
-            } else {
-                grade = "F";
-            }
+      ctx.strokeStyle = "#888";
+      ctx.lineWidth = 1.3;
+      ctx.beginPath();
+      ctx.moveTo(40, canvas.height - 50);
+      ctx.lineTo(canvas.width - 40, canvas.height - 50);
+      ctx.moveTo(40, canvas.height - 50);
+      ctx.lineTo(40, 30);
+      ctx.stroke();
 
-            alert('Your grade is: ' + grade);
+      function bell(x) {
+        const z = (x - average) / deviation;
+        return (1 / (deviation * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * z * z);
+      }
+
+      let maxY = 0;
+      for (let x = 0; x <= total; x += total/200) {
+        maxY = Math.max(maxY, bell(x));
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(40, canvas.height - 50);
+      for (let px = 0; px <= plotWidth; px++) {
+        const marks = (px / plotWidth) * total;
+        const y = bell(marks);
+        const py = (canvas.height - 50) - (y / maxY) * plotHeight;
+        ctx.lineTo(40 + px, py);
+      }
+      ctx.strokeStyle = "#2E7D32";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      const colors = {
+        "A+": "#007d79", "A": "#00b7d4",
+        "B+": "#0043ce", "B": "#3f6ad8",
+        "C+": "#f4777f", "C": "#f28c38",
+        "D": "#e55c00", "F": "#a62639"
+      };
+
+      gradeBoundaries.forEach((b) => {
+        const x1 = 40 + (b.min / total) * plotWidth;
+        const x2 = 40 + (b.max / total) * plotWidth;
+        ctx.fillStyle = colors[b.grade] + "33";
+        ctx.beginPath();
+        ctx.moveTo(x1, canvas.height - 50);
+        for (let x = x1; x <= x2; x += 1) {
+          const marks = ((x - 40) / plotWidth) * total;
+          const y = bell(marks);
+          const py = (canvas.height - 50) - (y / maxY) * plotHeight;
+          ctx.lineTo(x, py);
+        }
+        ctx.lineTo(x2, canvas.height - 50);
+        ctx.closePath();
+        ctx.fill();
+      });
+
+      gradeBoundaries.forEach((b) => {
+        if (b.min > 0.001 && b.min < total - 0.001) {
+          const x = 40 + (b.min / total) * plotWidth;
+          ctx.strokeStyle = "#bbb";
+          ctx.beginPath();
+          ctx.moveTo(x, 50);
+          ctx.lineTo(x, canvas.height - 50);
+          ctx.stroke();
+        }
+        const xLabel = 40 + ((b.min + b.max)/2 / total) * plotWidth;
+        ctx.fillStyle = colors[b.grade];
+        ctx.font = "bold 15px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(b.grade, xLabel, canvas.height - 30);
+      });
+
+      ctx.font = "12px Arial";
+      ctx.fillStyle = "#333";
+      ctx.textAlign = "center";
+      ctx.fillText("0", 40, canvas.height - 35);
+      ctx.fillText(total.toFixed(0), canvas.width - 40, canvas.height - 35);
+      ctx.textAlign = "left";
+      ctx.fillText("Marks", canvas.width - 60, 40);
+      ctx.fillText("Density", 10, 40);
+    }
+
+    const personalGradeCheckbox = document.getElementById("personal-grade");
+    const toggleLabelText = document.getElementById("toggle-label-text");
+    const yourMarksGroup = document.getElementById("your-marks-group");
+    const gradesForm = document.getElementById("grades-form");
+    const resultElement = document.getElementById("result");
+    const easterEggImage = document.getElementById("easter-egg");
+    const bellCanvas = document.getElementById("bell-curve");
+    const gradeTable = document.getElementById("grade-table");
+
+    function resizeCanvas() {
+      const containerWidth = Math.min(400, window.innerWidth - 40);
+      bellCanvas.width = containerWidth;
+      bellCanvas.height = containerWidth * 0.55;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function setPersonalMode(isPersonal) {
+      if (isPersonal) {
+        toggleLabelText.textContent = "Calculate my grade";
+        yourMarksGroup.style.display = "";
+        resultElement.style.display = "";
+        easterEggImage.style.display = "none";
+        bellCanvas.style.display = "none";
+        gradeTable.style.display = "none";
+        document.getElementById('your-marks').required = true;
+      } else {
+        toggleLabelText.textContent = "Show all grade boundaries";
+        yourMarksGroup.style.display = "none";
+        resultElement.style.display = "none";
+        easterEggImage.style.display = "none";
+        bellCanvas.style.display = "";
+        gradeTable.style.display = "";
+        document.getElementById('your-marks').required = false;
+      }
+    }
+
+    personalGradeCheckbox.addEventListener("change", function() {
+      setPersonalMode(this.checked);
+    });
+
+    setPersonalMode(personalGradeCheckbox.checked);
+
+    gradesForm.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const isPersonal = personalGradeCheckbox.checked;
+      const S = parseFloat(document.getElementById('total-marks').value);
+      const X = parseFloat(document.getElementById('class-average').value);
+      const D = parseFloat(document.getElementById('median-deviation').value);
+
+      resultElement.className = '';
+      easterEggImage.style.display = "none";
+      bellCanvas.style.display = "none";
+      gradeTable.style.display = "none";
+
+      if (isNaN(S) || isNaN(X) || isNaN(D) || S <= 0 || X < 0 || D <= 0 || X > S) {
+        resultElement.className = 'result-error';
+        resultElement.textContent = X > S 
+          ? '❗ Class average cannot exceed total marks.'
+          : '❗ Please enter valid positive numbers for all fields.';
+        resultElement.style.display = "";
+        return;
+      }
+
+      if (!isPersonal && D < 0.01) {
+        resultElement.className = 'result-error';
+        resultElement.textContent = '❗ Median deviation is too small for a meaningful curve.';
+        resultElement.style.display = "";
+        return;
+      }
+
+      if (isPersonal) {
+        const Mks = parseFloat(document.getElementById('your-marks').value);
+        if (isNaN(Mks) || Mks < 0 || Mks > S) {
+          resultElement.className = 'result-error';
+          resultElement.textContent = Mks > S 
+            ? "❗ Your marks can't be more than the total marks."
+            : '❗ Please enter valid positive marks.';
+          resultElement.style.display = "";
+          return;
+        }
+        let grade;
+        if (Mks >= X + 1.5 * D) grade = "A+";
+        else if (Mks >= X + D) grade = "A";
+        else if (Mks >= X + 0.5 * D) grade = "B+";
+        else if (Mks >= X) grade = "B";
+        else if (Mks >= X - 0.5 * D) grade = "C+";
+        else if (Mks >= X - D) grade = "C";
+        else if (Mks >= X - 1.5 * D) grade = "D";
+        else grade = "F";
+        
+        resultElement.textContent = `Your grade is: ${grade}`;
+        resultElement.classList.add('result-show');
+        resultElement.style.display = "";
+        easterEggImage.style.display = grade === "F" ? "block" : "none";
+      } else {
+        const bounds = getGradeBoundaries(X, D, S);
+        drawBellCurve(bellCanvas, X, D, S, bounds);
+        bellCanvas.style.display = "";
+
+        const colors = {
+          "A+": "#007d79", "A": "#00b7d4",
+          "B+": "#0043ce", "B": "#3f6ad8",
+          "C+": "#f4777f", "C": "#f28c38",
+          "D": "#e55c00", "F": "#a62639"
+        };
+        let table = `<table style="margin:20px auto;border-collapse:collapse;font-size:1.1em;">
+          <tr style="background:#f0f0f0;">
+            <th style="padding:6px 16px;">Grade</th>
+            <th style="padding:6px 16px;">Marks range</th>
+          </tr>`;
+        bounds.forEach(b => {
+          let minV = Math.round(b.min * 100) / 100, maxV = Math.round(b.max * 100) / 100;
+          let range = b.grade === "A+" ? `≥ ${minV}` :
+                      b.grade === "F" ? `< ${maxV}` :
+                      `${minV} – ${maxV}`;
+          table += `<tr>
+            <td style="padding:6px 16px;font-weight:bold;color:${colors[b.grade]};">${b.grade}</td>
+            <td style="padding:6px 16px;">${range}</td>
+          </tr>`;
         });
-    </script>
+        table += "</table>";
+        gradeTable.innerHTML = table;
+        gradeTable.style.display = "";
+      }
+    });
+  </script>
 </body>
 </html>
