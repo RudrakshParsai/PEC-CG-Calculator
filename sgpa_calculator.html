@@ -10,25 +10,11 @@
     <div class="container">
         <h1>SGPA Calculator</h1>
         <form id="sgpa-form">
-            <div id="subjects-container">
-                <div class="subject-row">
-                    <input type="text" name="subject1" placeholder="Subject 1" required>
-                    <input type="number" name="credits1" placeholder="Credits" min="1" max="10" required>
-                    <select name="grade1" required>
-                        <option value="" disabled selected hidden>Grade</option>
-                        <option value="10">A+</option>
-                        <option value="9">A</option>
-                        <option value="8">B+</option>
-                        <option value="7">B</option>
-                        <option value="6">C+</option>
-                        <option value="5">C</option>
-                        <option value="4">D</option>
-                        <option value="0">F</option>
-                    </select>
-                    <button type="button" class="remove-subject">Remove</button>
-                </div>
+            <div id="subjects-container"></div>
+            <div class="actions">
+                <button type="button" id="add-subject">Add Subject</button>
+                <button type="reset" id="reset-form">Reset</button>
             </div>
-            <button type="button" id="add-subject">Add Subject</button><br><br>
             <button type="submit">Calculate SGPA</button>
         </form>
     </div>
@@ -37,66 +23,6 @@
         <p>Made with ❤️ by Rudraksh Parsai.</p>
     </footer>
 
-    <script>
-        document.getElementById('add-subject').addEventListener('click', function() {
-            const container = document.getElementById('subjects-container');
-            const subjectCount = container.getElementsByClassName('subject-row').length + 1;
-            const newRow = document.createElement('div');
-            newRow.className = 'subject-row';
-            newRow.innerHTML = `
-                <input type="text" name="subject${subjectCount}" placeholder="Subject ${subjectCount}" required>
-                <input type="number" name="credits${subjectCount}" placeholder="Credits" min="1" max="10" required>
-                <select name="grade${subjectCount}" required>
-                    <option value="" disabled selected hidden>Grade</option>
-                    <option value="10">A+</option>
-                    <option value="9">A</option>
-                    <option value="8">B+</option>
-                    <option value="7">B</option>
-                    <option value="6">C+</option>
-                    <option value="5">C</option>
-                    <option value="4">D</option>
-                    <option value="3">F</option>
-                </select>
-                <button type="button" class="remove-subject">Remove</button>
-            `;
-            container.appendChild(newRow);
-            addRemoveSubjectListeners();
-        });
-
-        function addRemoveSubjectListeners() {
-            const removeButtons = document.getElementsByClassName('remove-subject');
-            for (let button of removeButtons) {
-                button.removeEventListener('click', removeSubject);
-                button.addEventListener('click', removeSubject);
-            }
-        }
-
-        function removeSubject(event) {
-            const button = event.target;
-            const row = button.parentElement;
-            row.remove();
-        }
-
-        document.getElementById('sgpa-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent form submission
-
-            const subjectRows = document.getElementsByClassName('subject-row');
-            let totalCredits = 0;
-            let totalPoints = 0;
-
-            for (let row of subjectRows) {
-                const grade = parseFloat(row.querySelector('select').value);
-                const credits = parseFloat(row.querySelector('input[type="number"]').value);
-                totalCredits += credits;
-                totalPoints += grade * credits;
-            }
-
-            const sgpa = totalPoints / totalCredits;
-            alert('Your SGPA is ' + sgpa.toFixed(2) + '.');
-        });
-
-        
-        addRemoveSubjectListeners();
-    </script>
+    <script src="sgpa.js"></script>
 </body>
 </html>

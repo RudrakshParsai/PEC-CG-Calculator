@@ -10,12 +10,13 @@
     <div class="container">
         <h1>CGPA Calculator</h1>
         <form id="cgpa-form">
-            <div id="semesters-container">
-                <div class="semester-row">
-                    <input type="number" name="sgpa1" placeholder="SGPA in 1st semester" min="1.0" max="10.0" step="0.01" required>
-                </div>
+            <div id="semesters-container"></div>
+            <div class="actions">
+                <button type="button" id="add-semester">Add Semester</button>
+                <br>
+                <button type="reset" id="reset-form">Reset</button>
             </div>
-            <button type="button" id="add-semester">Add Semester</button><br><br>
+            
             <button type="submit">Calculate CGPA</button>
         </form>
     </div>
@@ -24,38 +25,6 @@
         <p>Made with ❤️ by Rudraksh Parsai.</p>
     </footer>
 
-    <script>
-        document.getElementById('add-semester').addEventListener('click', function() {
-            const container = document.getElementById('semesters-container');
-            const semesterCount = container.getElementsByClassName('semester-row').length + 1;
-            const newRow = document.createElement('div');
-            newRow.className = 'semester-row';
-            newRow.innerHTML = `
-                <input type="number" name="sgpa${semesterCount}" placeholder="SGPA in ${semesterCount} semester" min="1.0" max="10.0" step="0.01" required>
-            `;
-            container.appendChild(newRow);
-        });
-
-        document.getElementById('cgpa-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent form submission
-
-            const semesterRows = document.getElementsByClassName('semester-row');
-            let totalSGPA = 0;
-            let count = 0;
-
-            for (let row of semesterRows) {
-                const sgpa = parseFloat(row.querySelector('input').value);
-                if (sgpa < 1.0 || sgpa > 10.0) {
-                    alert('Please enter SGPA values between 1.0 and 10.0.');
-                    return;
-                }
-                totalSGPA += sgpa;
-                count++;
-            }
-
-            const cgpa = totalSGPA / count;
-            alert('Your CGPA is ' + cgpa.toFixed(2) + '.');
-        });
-    </script>
+    <script src="cgpa.js"></script>
 </body>
 </html>
